@@ -10,3 +10,5 @@ src/db/postgres-data/*
 src/__pycache__/*
 docs/quizzes/*
 assignments/responses/*
+vids/
+resources/
