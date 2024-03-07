@@ -1,5 +1,5 @@
 from sacred import Experiment
-from sacred.observers import SqlObserver
+from sacred.observers import SqlObserver # allows connection to db
 
 import pandas as pd
 
@@ -9,26 +9,26 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.model_selection import cross_validate, train_test_split
 import os
 from dotenv import load_dotenv
-
+# importing module to load environment variables
 from logger import get_logger
 
 
 from credit_preproc_ingredient import preproc_ingredient, get_column_transformer
 from credit_data_ingredient import data_ingredient, load_data
 from credit_db_ingredient import db_ingredient, df_to_sql
-load_dotenv()
+load_dotenv() # loading envrionment variables in a python script as opposed ot a notebook
 
 
-db_url = os.getenv('DB_URL')
+db_url = os.getenv('DB_URL') # from envrionment file
 
-_logs = get_logger(__name__)
+_logs = get_logger(__name__) # our own standard logger
 ex  = Experiment("Credit Experiment",
                  ingredients=[data_ingredient, preproc_ingredient, db_ingredient])
 
 ex.logger = _logs
-ex.observers.append(SqlObserver(db_url))
+ex.observers.append(SqlObserver(db_url)) #appending the database observer
 
-@ex.config
+@ex.config # decorators come from sacred
 def cfg():
     '''
     Config function: all variables here will be avialable in captured functions.
@@ -56,7 +56,7 @@ def get_pipe(preproc_pipe):
 
 
 @ex.capture
-def evaluate_model(pipe, X, Y, folds, scoring, _run):
+def evaluate_model(pipe, X, Y, folds, scoring, _run): #_run is a sacred variable  
     '''Evaluate model using corss validation.'''
     _logs.info(f'Evaluating model')
     res_dict = cross_validate(pipe, X, Y, cv = folds, scoring = scoring)
@@ -74,7 +74,7 @@ def res_to_sql(res):
     
     df_to_sql(res.groupby('run_id', group_keys=False).mean(), "model_cv_results")
 
-@ex.automain
+@ex.automain # not the capture function anymore. but the automain
 def run():
     '''Main experiment run.'''
     _logs.info(f'Running experiment')

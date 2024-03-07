@@ -14,7 +14,7 @@ model_ingredient.logger = _logs
 def cfg():
     pass
 
-
+# notice import statements are inside the fucntion to conserve memory. 
 @model_ingredient.capture
 def get_model(model):
     '''
@@ -56,7 +56,7 @@ def get_param_grid(model):
 
     if file is not None:
         with open(file) as f:
-            return json.load(f)
+            return json.load(f) # this will return a python dictionary. But the config storage is json
     else:
         return None
         

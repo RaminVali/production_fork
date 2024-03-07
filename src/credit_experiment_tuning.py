@@ -100,7 +100,7 @@ def pickle_model_artifact(pipe, model, preprocessing, _run):
         f"model_{model}_{preprocessing}_{_run._id}.pkl")
     
     with open(outpath, 'wb') as f:
-        pickle.dump(pipe, f)
+        pickle.dump(pipe, f) # serialized format, pythonic way of saving binary files. 
     # Add artifact to experiment run
     _run.add_artifact(outpath)
     
@@ -108,7 +108,7 @@ def pickle_model_artifact(pipe, model, preprocessing, _run):
     
 
 
-@ex.main
+@ex.main # this is not automain automain does not need if__name__=main... this one does. 
 def run(preprocessing, model):
     '''Main function: runs the experiment.'''
     _logs.info(f'Running experiment')
@@ -121,7 +121,7 @@ def run(preprocessing, model):
             test_size = 0.2)
         res, pipe_best = grid_search(pipe, param_grid, X_train, Y_train)   
         _logs.info(f'Optimization results {res.shape}')
-        res_to_sql(res)
+        res_to_sql(res) # when ou have the best result save model to pickle and the other info to sql. 
         pickle_model_artifact(pipe_best, model, preprocessing)
         
     else:
